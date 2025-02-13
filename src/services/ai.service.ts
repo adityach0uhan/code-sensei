@@ -18,76 +18,6 @@ const model = genAI.getGenerativeModel({
         - **Maintainability:** Check if the code follows clean coding principles (modularization, readability, meaningful naming, DRY, SOLID principles).
         - **Best Practices:** Suggest industry best practices, including design patterns, framework-specific optimizations, and adherence to language-specific conventions.
         - **Alternative Approaches:** If there’s a better way to implement the logic, suggest a more efficient approach.
-        
-        ## **Response Format (JSON)**
-        Provide the review in a structured JSON format as follows:
-        \`\`\`json
-        {
-            "errors": [
-                {
-                    "line": <line_number>,
-                    "issue": "<description_of_error>",
-                    "suggestion": "<how_to_fix>"
-                }
-            ],
-            "testing": [
-                {
-                    "missing_cases": "<list_of_edge_cases_not_handled>",
-                    "test_suggestions": "<how_to_test_properly>"
-                }
-            ],
-            "parameters": [
-                {
-                    "issue": "<problem_with_input_parameters>",
-                    "suggestion": "<how_to_fix_input_validation>"
-                }
-            ],
-            "security_risks": [
-                {
-                    "risk": "<type_of_security_risk>",
-                    "affected_code": "<snippet_or_line>",
-                    "fix": "<recommended_fix>"
-                }
-            ],
-            "optimization": [
-                {
-                    "bottleneck": "<where_performance_issues_exist>",
-                    "improvement": "<suggested_optimization>"
-                }
-            ],
-            "scalability": [
-                {
-                    "issue": "<why_this_code_might_not_scale>",
-                    "suggestion": "<how_to_improve_scalability>"
-                }
-            ],
-            "maintainability": [
-                {
-                    "issue": "<problems_with_code_readability_or_structure>",
-                    "suggestion": "<how_to_make_code_easier_to_maintain>"
-                }
-            ],
-            "best_practices": [
-                {
-                    "recommendation": "<specific_best_practice_to_follow>",
-                    "benefit": "<why_this_is_better>"
-                }
-            ],
-            "alternative_approaches": [
-                {
-                    "suggestion": "<better_way_to_implement>",
-                    "reason": "<why_this_is_better>"
-                }
-            ],
-            "final_verdict": {
-                "overall_rating": "<rating_out_of_10>",
-                "summary": "<brief_summary_of_review>",
-                "next_steps": "<actions_to_improve_code>"
-            }
-        }
-        \`\`\`
-        
-        Ensure the review is **concise, insightful, and actionable** while maintaining a professional tone.
     `
 });
 
@@ -95,8 +25,76 @@ const generateResponse = async (prompt: string) => {
     if (!prompt) {
         return { success: false, error: 'Prompt is required' };
     }
+    const modifiedPrompt =
+        prompt +
+        ` Return a JSON response using this schema:
 
-    const result = await model.generateContent(prompt);
+{
+  "errors": [
+    {
+      "line": <line_number>,
+      "issue": "<description_of_error>",
+      "suggestion": "<how_to_fix>"
+    }
+  ],
+  "testing": [
+    {
+      "missing_cases": "<list_of_edge_cases_not_handled>",
+      "test_suggestions": "<how_to_test_properly>"
+    }
+  ],
+  "parameters": [
+    {
+      "issue": "<problem_with_input_parameters>",
+      "suggestion": "<how_to_fix_input_validation>"
+    }
+  ],
+  "security_risks": [
+    {
+      "risk": "<type_of_security_risk>",
+      "affected_code": "<snippet_or_line>",
+      "fix": "<recommended_fix>"
+    }
+  ],
+  "optimization": [
+    {
+      "bottleneck": "<where_performance_issues_exist>",
+      "improvement": "<suggested_optimization>"
+    }
+  ],
+  "scalability": [
+    {
+      "issue": "<why_this_code_might_not_scale>",
+      "suggestion": "<how_to_improve_scalability>"
+    }
+  ],
+  "maintainability": [
+    {
+      "issue": "<problems_with_code_readability_or_structure>",
+      "suggestion": "<how_to_make_code_easier_to_maintain>"
+    }
+  ],
+  "best_practices": [
+    {
+      "recommendation": "<specific_best_practice_to_follow>",
+      "benefit": "<why_this_is_better>"
+    }
+  ],
+  "alternative_approaches": [
+    {
+      "suggestion": "<better_way_to_implement>",
+      "reason": "<why_this_is_better>"
+    }
+  ],
+  "final_verdict": {
+    "overall_rating": "<rating_out_of_10>",
+    "summary": "<brief_summary_of_review>",
+    "next_steps": "<actions_to_improve_code>"
+  }
+}
+`;
+
+    const result = await model.generateContent(modifiedPrompt);
     if (!result) {
         return { success: false, error: 'Failed to generate response' };
     }
